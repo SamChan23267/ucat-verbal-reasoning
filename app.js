@@ -73,6 +73,9 @@ const orderedQuestions = questionBank.flatMap((passage) =>
   }))
 );
 
+const TARGET_SECONDS = 28.63;
+const TEST_TIMER_INTERVAL_MS = 250;
+
 const defaultStats = {
   totalQuestions: orderedQuestions.length,
   attempted: 0,
@@ -159,21 +162,21 @@ function getRows() {
       score: overallAccuracy,
       attempted: `${state.stats.attempted} / ${state.stats.totalQuestions}`,
       correct: `${state.stats.correct} / ${state.stats.totalQuestions}`,
-      timing: `${averageSeconds(state.stats.attempted, state.stats.totalTimeMs)} Target: 28.63s`
+      timing: `${averageSeconds(state.stats.attempted, state.stats.totalTimeMs)} Target: ${TARGET_SECONDS.toFixed(2)}s`
     },
     {
       name: "True, False, Can't Tell",
       score: tfct.attempted ? tfct.correct / tfct.attempted : 0,
       attempted: `${tfct.attempted} / ${tfct.total}`,
       correct: `${tfct.correct} / ${tfct.total}`,
-      timing: `${averageSeconds(tfct.attempted, tfct.totalTimeMs)} Target: 28.63s`
+      timing: `${averageSeconds(tfct.attempted, tfct.totalTimeMs)} Target: ${TARGET_SECONDS.toFixed(2)}s`
     },
     {
       name: "Mixed / Other",
       score: mixed.attempted ? mixed.correct / mixed.attempted : 0,
       attempted: `${mixed.attempted} / ${mixed.total}`,
       correct: `${mixed.correct} / ${mixed.total}`,
-      timing: `${averageSeconds(mixed.attempted, mixed.totalTimeMs)} Target: 28.63s`
+      timing: `${averageSeconds(mixed.attempted, mixed.totalTimeMs)} Target: ${TARGET_SECONDS.toFixed(2)}s`
     }
   ];
 }
@@ -204,9 +207,11 @@ function renderDashboard() {
 }
 
 function renderChart() {
-  const labels = state.stats.sessions.slice(-8).map((s, i) => `Session ${i + 1}`);
-  const accuracyData = state.stats.sessions.slice(-8).map((s) => s.accuracy);
-  const speedData = state.stats.sessions.slice(-8).map((s) => s.avgSeconds);
+  const recentSessions = state.stats.sessions.slice(-8);
+  const startNumber = Math.max(state.stats.sessions.length - recentSessions.length + 1, 1);
+  const labels = recentSessions.map((_, i) => `Session ${startNumber + i}`);
+  const accuracyData = recentSessions.map((s) => s.accuracy);
+  const speedData = recentSessions.map((s) => s.avgSeconds);
   const ctx = document.getElementById("progress-chart");
   if (typeof Chart !== "function") {
     return;
@@ -351,7 +356,7 @@ function startTestTimer() {
     if (remaining <= 0) {
       endTestMode();
     }
-  }, 250);
+  }, TEST_TIMER_INTERVAL_MS);
 }
 
 function startTestMode() {
