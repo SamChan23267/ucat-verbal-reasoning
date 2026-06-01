@@ -73,7 +73,7 @@ const orderedQuestions = questionBank.flatMap((passage) =>
   }))
 );
 
-// UCAT VR pacing target (roughly 21 minutes / 44 questions).
+// UCAT VR pacing target derived from ~21 minutes / 44 questions (1260 / 44 = 28.63s).
 const TARGET_SECONDS = 28.63;
 const TEST_TIMER_INTERVAL_MS = 250;
 const CHART_UNAVAILABLE_MESSAGE = "Chart unavailable in this environment.";
@@ -111,7 +111,8 @@ function loadStats() {
       ])
     );
     return merged;
-  } catch {
+  } catch (error) {
+    console.warn("Failed to load saved stats, using defaults.", error);
     return structuredClone(defaultStats);
   }
 }
