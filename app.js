@@ -139,6 +139,7 @@ const els = {
   practicePassage: document.getElementById("practice-passage"),
   practiceQuestion: document.getElementById("practice-question"),
   practiceOptions: document.getElementById("practice-options"),
+  practiceSubmit: document.getElementById("practice-submit"),
   practiceFeedback: document.getElementById("practice-feedback"),
   practiceExplanation: document.getElementById("practice-explanation"),
   practiceNext: document.getElementById("practice-next"),
@@ -269,9 +270,24 @@ function renderChart() {
   });
 }
 
-function applyPracticeAnswer(selected) {
+function selectPracticeAnswer(selected) {
+  if (state.practice.answered) {
+    return;
+  }
+  state.practice.selected = selected;
+  [...els.practiceOptions.querySelectorAll("button")].forEach((btn) => {
+    btn.classList.toggle("selected", btn.dataset.option === selected);
+  });
+  els.practiceSubmit.disabled = false;
+}
+
+function applyPracticeAnswer() {
   const q = orderedQuestions[state.practice.index];
   if (!q || state.practice.answered) {
+    return;
+  }
+  const selected = state.practice.selected;
+  if (!selected) {
     return;
   }
   state.practice.answered = true;
@@ -292,6 +308,7 @@ function applyPracticeAnswer(selected) {
   els.practiceFeedback.textContent = correct ? "Correct" : "Incorrect";
   els.practiceFeedback.className = `feedback ${correct ? "correct" : "incorrect"}`;
   els.practiceExplanation.textContent = q.explanation;
+  els.practiceSubmit.disabled = true;
   els.practiceNext.disabled = false;
   saveStats();
 }
@@ -303,7 +320,9 @@ function renderPracticeQuestion() {
     return;
   }
   state.practice.answered = false;
+  state.practice.selected = null;
   state.practice.startedAt = Date.now();
+  els.practiceSubmit.disabled = true;
   els.practiceNext.disabled = true;
   els.practiceFeedback.textContent = "";
   els.practiceFeedback.className = "feedback";
@@ -314,7 +333,7 @@ function renderPracticeQuestion() {
     .map((opt) => `<button class="option" data-option="${opt}">${opt}</button>`)
     .join("");
   [...els.practiceOptions.querySelectorAll("button")].forEach((btn) => {
-    btn.addEventListener("click", () => applyPracticeAnswer(btn.dataset.option));
+    btn.addEventListener("click", () => selectPracticeAnswer(btn.dataset.option));
   });
 }
 
@@ -447,6 +466,7 @@ function endTestMode() {
 els.startPractice.addEventListener("click", startPracticeMode);
 els.startTest.addEventListener("click", startTestMode);
 els.practiceBack.addEventListener("click", () => setView("dashboard"));
+els.practiceSubmit.addEventListener("click", applyPracticeAnswer);
 els.practiceNext.addEventListener("click", navigatePracticeNext);
 els.testPrev.addEventListener("click", () => navigateTest(-1));
 els.testNext.addEventListener("click", () => navigateTest(1));
