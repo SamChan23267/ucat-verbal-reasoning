@@ -73,9 +73,10 @@ const orderedQuestions = questionBank.flatMap((passage) =>
   }))
 );
 
-// Dashboard target pacing per question.
+// UCAT VR pacing target (roughly 21 minutes / 44 questions).
 const TARGET_SECONDS = 28.63;
 const TEST_TIMER_INTERVAL_MS = 250;
+const CHART_UNAVAILABLE_MESSAGE = "Chart unavailable in this environment.";
 const QUESTION_TYPE_TOTALS = orderedQuestions.reduce(
   (totals, question) => {
     totals[question.type] = (totals[question.type] || 0) + 1;
@@ -231,8 +232,19 @@ function renderChart() {
   const accuracyData = recentSessions.map((s) => s.accuracy);
   const speedData = recentSessions.map((s) => s.avgSeconds);
   const ctx = document.getElementById("progress-chart");
+  const chartCard = ctx.parentElement;
+  let fallback = document.getElementById("chart-fallback");
   if (typeof Chart !== "function") {
+    if (!fallback) {
+      fallback = document.createElement("p");
+      fallback.id = "chart-fallback";
+      chartCard.appendChild(fallback);
+    }
+    fallback.textContent = CHART_UNAVAILABLE_MESSAGE;
     return;
+  }
+  if (fallback) {
+    fallback.remove();
   }
   if (progressChart) {
     progressChart.destroy();
@@ -314,15 +326,19 @@ function navigatePracticeNext() {
   }
   state.practice.index += 1;
   if (state.practice.index >= orderedQuestions.length) {
-    state.stats.sessions.push({
-      accuracy: state.stats.attempted ? Number(((state.stats.correct / state.stats.attempted) * 100).toFixed(1)) : 0,
-      avgSeconds: state.stats.attempted ? Number((state.stats.totalTimeMs / state.stats.attempted / 1000).toFixed(2)) : 0
-    });
+    state.stats.sessions.push(calculateSessionStats(state.stats.correct, state.stats.attempted, state.stats.totalTimeMs));
     saveStats();
     setView("dashboard");
     return;
   }
   renderPracticeQuestion();
+}
+
+function calculateSessionStats(correctCount, attemptedCount, totalTimeMs) {
+  return {
+    accuracy: attemptedCount ? Number(((correctCount / attemptedCount) * 100).toFixed(1)) : 0,
+    avgSeconds: attemptedCount ? Number((totalTimeMs / attemptedCount / 1000).toFixed(2)) : 0
+  };
 }
 
 function renderTestQuestion() {
@@ -419,10 +435,7 @@ function endTestMode() {
     }
   });
 
-  state.stats.sessions.push({
-    accuracy: attemptedInSession ? Number(((correctInSession / attemptedInSession) * 100).toFixed(1)) : 0,
-    avgSeconds: attemptedInSession ? Number((totalTime / attemptedInSession / 1000).toFixed(2)) : 0
-  });
+  state.stats.sessions.push(calculateSessionStats(correctInSession, attemptedInSession, totalTime));
   saveStats();
   setView("dashboard");
 }
