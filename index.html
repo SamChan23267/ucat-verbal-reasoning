@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UCAT Verbal Reasoning</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <section id="dashboard-view" class="view active">
+        <h1>UCAT Verbal Reasoning Dashboard</h1>
+        <div class="stats-table" id="stats-table"></div>
+        <div class="chart-card">
+          <h2>Recent Sessions</h2>
+          <canvas id="progress-chart" aria-label="Accuracy and speed chart"></canvas>
+        </div>
+        <div class="actions">
+          <button id="start-practice" class="primary">Start Practice Mode</button>
+          <button id="start-test" class="secondary">Start Test Mode</button>
+        </div>
+      </section>
+
+      <section id="practice-view" class="view">
+        <header class="mode-header">
+          <h2>Practice Mode</h2>
+          <button id="practice-back">Back to Dashboard</button>
+        </header>
+        <div class="split-layout">
+          <article class="panel" id="practice-passage"></article>
+          <article class="panel">
+            <div id="practice-question"></div>
+            <div id="practice-options" class="options"></div>
+            <button id="practice-submit" class="primary" disabled>Submit</button>
+            <p id="practice-feedback" class="feedback"></p>
+            <p id="practice-explanation" class="explanation"></p>
+            <button id="practice-next" disabled>Next Question</button>
+          </article>
+        </div>
+      </section>
+
+      <section id="test-view" class="view">
+        <header class="mode-header">
+          <h2>Test Mode</h2>
+          <div id="test-timer" class="timer"></div>
+          <button id="end-test" class="danger">End Test</button>
+        </header>
+        <div class="split-layout">
+          <article class="panel" id="test-passage"></article>
+          <article class="panel">
+            <div id="test-question"></div>
+            <div id="test-options" class="options"></div>
+            <div class="nav-buttons">
+              <button id="test-prev">Previous</button>
+              <button id="test-next">Next</button>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
