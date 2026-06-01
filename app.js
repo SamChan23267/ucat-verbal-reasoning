@@ -73,8 +73,16 @@ const orderedQuestions = questionBank.flatMap((passage) =>
   }))
 );
 
+// Dashboard target pacing per question.
 const TARGET_SECONDS = 28.63;
 const TEST_TIMER_INTERVAL_MS = 250;
+const QUESTION_TYPE_TOTALS = orderedQuestions.reduce(
+  (totals, question) => {
+    totals[question.type] = (totals[question.type] || 0) + 1;
+    return totals;
+  },
+  {}
+);
 
 const defaultStats = {
   totalQuestions: orderedQuestions.length,
@@ -82,8 +90,8 @@ const defaultStats = {
   correct: 0,
   totalTimeMs: 0,
   byType: {
-    "True, False, Can't Tell": { attempted: 0, correct: 0, total: orderedQuestions.filter((q) => q.type === "True, False, Can't Tell").length, totalTimeMs: 0 },
-    "Mixed / Other": { attempted: 0, correct: 0, total: orderedQuestions.filter((q) => q.type === "Mixed / Other").length, totalTimeMs: 0 }
+    "True, False, Can't Tell": { attempted: 0, correct: 0, total: QUESTION_TYPE_TOTALS["True, False, Can't Tell"] || 0, totalTimeMs: 0 },
+    "Mixed / Other": { attempted: 0, correct: 0, total: QUESTION_TYPE_TOTALS["Mixed / Other"] || 0, totalTimeMs: 0 }
   },
   sessions: []
 };
@@ -91,7 +99,17 @@ const defaultStats = {
 function loadStats() {
   try {
     const saved = JSON.parse(localStorage.getItem("ucat-vr-stats"));
-    return saved ? { ...defaultStats, ...saved } : structuredClone(defaultStats);
+    if (!saved) {
+      return structuredClone(defaultStats);
+    }
+    const merged = { ...defaultStats, ...saved };
+    merged.byType = Object.fromEntries(
+      Object.entries(defaultStats.byType).map(([typeName, defaultTypeStats]) => [
+        typeName,
+        { ...defaultTypeStats, ...(saved.byType?.[typeName] || {}) }
+      ])
+    );
+    return merged;
   } catch {
     return structuredClone(defaultStats);
   }
