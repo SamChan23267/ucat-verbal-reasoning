@@ -1,0 +1,162 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f4f6fb;
+  color: #1f2633;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+.stats-table {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.stats-header,
+.stats-row {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr 1fr 1.8fr;
+  gap: 12px;
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 8px;
+  align-items: center;
+}
+
+.stats-header {
+  font-weight: 700;
+  background: #dbe7ff;
+}
+
+.chart-card,
+.panel {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+
+button {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 14px;
+  cursor: pointer;
+  background: #d7dbe5;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.primary {
+  background: #2f6dff;
+  color: #fff;
+  font-weight: 700;
+}
+
+.secondary {
+  background: #0f9d58;
+  color: #fff;
+  font-weight: 700;
+}
+
+.danger {
+  background: #d93025;
+  color: #fff;
+}
+
+.mode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.split-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.options {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.option {
+  text-align: left;
+  background: #f1f4fb;
+}
+
+.option.selected {
+  border: 2px solid #2f6dff;
+}
+
+.feedback.correct {
+  color: #0f9d58;
+  font-weight: 700;
+}
+
+.feedback.incorrect {
+  color: #d93025;
+  font-weight: 700;
+}
+
+.dot-row {
+  display: flex;
+  gap: 4px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d2d7e2;
+}
+
+.dot.filled {
+  background: #2f6dff;
+}
+
+.timer {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .split-layout,
+  .stats-header,
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+}
