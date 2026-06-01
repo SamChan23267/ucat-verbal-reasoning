@@ -123,7 +123,7 @@ function saveStats() {
 const state = {
   view: "dashboard",
   stats: loadStats(),
-  practice: { index: 0, answered: false, selected: null, startedAt: 0 },
+  practice: { index: 0, answered: false, selected: null, startedAt: 0, attempted: 0, correct: 0, totalTimeMs: 0 },
   test: { index: 0, answers: {}, startTimes: {}, timings: {}, startAt: 0, durationSec: 300, intervalId: null }
 };
 
@@ -277,12 +277,15 @@ function applyPracticeAnswer(selected) {
   const elapsed = Date.now() - state.practice.startedAt;
   state.stats.attempted += 1;
   state.stats.totalTimeMs += elapsed;
+  state.practice.attempted += 1;
+  state.practice.totalTimeMs += elapsed;
   const typeStats = state.stats.byType[q.type];
   typeStats.attempted += 1;
   typeStats.totalTimeMs += elapsed;
   const correct = selected === q.correctAnswer;
   if (correct) {
     state.stats.correct += 1;
+    state.practice.correct += 1;
     typeStats.correct += 1;
   }
   els.practiceFeedback.textContent = correct ? "Correct" : "Incorrect";
@@ -315,7 +318,7 @@ function renderPracticeQuestion() {
 }
 
 function startPracticeMode() {
-  state.practice.index = 0;
+  state.practice = { index: 0, answered: false, selected: null, startedAt: 0, attempted: 0, correct: 0, totalTimeMs: 0 };
   setView("practice");
   renderPracticeQuestion();
 }
@@ -326,7 +329,7 @@ function navigatePracticeNext() {
   }
   state.practice.index += 1;
   if (state.practice.index >= orderedQuestions.length) {
-    state.stats.sessions.push(calculateSessionStats(state.stats.correct, state.stats.attempted, state.stats.totalTimeMs));
+    state.stats.sessions.push(calculateSessionStats(state.practice.correct, state.practice.attempted, state.practice.totalTimeMs));
     saveStats();
     setView("dashboard");
     return;
